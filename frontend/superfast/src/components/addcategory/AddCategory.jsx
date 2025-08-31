@@ -5,7 +5,7 @@ import {
   addCategoryApi,
   upateCategoryApi,
 } from "../../apiMiddleware/categoryMiddleware";
-import CustomToast from "../../utils/customToast";
+
 import { filtercategory } from "../../categorySlice/categorySlice";
 function AddCategory({
   handleTogglePopUp,
