@@ -5,7 +5,7 @@ import {
   addSubCategoryApi,
   updateSubCategoryApi,
 } from "../../apiMiddleware/subcategoryMiddleware";
-import CustomToast from "../../utils/customToast";
+
 import { filterSubCategory } from "../../subcategorySlice/Subcategory";
 
 function AddSubcategory({
