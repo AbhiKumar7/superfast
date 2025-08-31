@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import Layout from "./components/header/Layout";
 import SearchPage from "./pages/SearchPage";
 import SignInPage from "./pages/SignInPage";
-import VerifyOtp from "./pages/verifyOtp";
+import VerifyOtp from "./pages/VerifyOtp";
 import LoginPage from "./pages/LoginPage";
 
 import AdminProtectedRoute from "./components/adminProtectedRoute/AdminProtectedRoute";

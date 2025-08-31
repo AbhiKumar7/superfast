@@ -9,7 +9,7 @@
     "backend": "nodemon backend/index.js",
      "build": "npm install --prefix frontend/superfast && npm run build --prefix frontend/superfast",
     "frontend": "cd frontend/superfast && npm run dev",
-       "start": "node backend/index.js"
+    "start": "cd backend && npm install && npm run start"
 
   },
   "keywords": [],
