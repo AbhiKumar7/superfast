@@ -1,0 +1,22 @@
+{
+  "name": "superfast",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "nodemon backend/index.js",
+     "build": "npm install --prefix frontend/superfast && npm run build --prefix frontend/superfast",
+    "frontend": "cd frontend/superfast && npm run dev",
+    "start": "cd backend && npm install && npm run start"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
