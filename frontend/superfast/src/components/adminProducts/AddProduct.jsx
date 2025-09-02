@@ -8,6 +8,7 @@ import {
   updateProductApi,
 } from "../../apiMiddleware/productMiddleware";
 import { RippleRingLoader } from "react-loaderkit";
+
 const AddProduct = ({
   fetchAllProduct,
   setisEditProduct,
@@ -16,6 +17,8 @@ const AddProduct = ({
   handleAddProductForm,
 }) => {
   const dispatch = useDispatch();
+  const { isLoading, selectedproduct } = useSelector((state) => state.product);
+
   const [productName, setproductName] = useState("");
   const [imagePreviews, setImagePreviews] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -28,15 +31,29 @@ const AddProduct = ({
   const [categoryData, setcategoryData] = useState([]);
   const [subCategoryData, setsubCategoryData] = useState([]);
   const [productError, setproductError] = useState("");
-  const { isLoading, selectedproduct } = useSelector((state) => state.product);
-  console.log(isEditProduct);
 
+  // Reset form state
+  const resetForm = () => {
+    setproductName("");
+    setproductUnit("");
+    setproductPrice("");
+    setproductDiscount("");
+    setproductDescription("");
+    setImagePreviews([]);
+    setProductImages([]);
+    setSelectedCategoryId("");
+    setSelectedSubCategoryId("");
+    setproductError("");
+  };
+
+  // Fetch product for edit mode
   useEffect(() => {
     if (isEditProduct && productId) {
       dispatch(filterProduct({ productId }));
     }
   }, [isEditProduct, productId, dispatch]);
 
+  // Pre-fill values when editing
   useEffect(() => {
     if (isEditProduct && selectedproduct) {
       setproductName(selectedproduct.name || "");
@@ -44,12 +61,13 @@ const AddProduct = ({
       setproductPrice(selectedproduct.price || "");
       setproductDescription(selectedproduct.description || "");
       setproductUnit(selectedproduct.unit || "");
-
       setImagePreviews(selectedproduct.image || []);
+      setSelectedCategoryId(selectedproduct.categoryId || "");
+      setSelectedSubCategoryId(selectedproduct.subCategoryId || "");
     }
   }, [isEditProduct, selectedproduct]);
 
-  // get all category
+  // Get all category
   useEffect(() => {
     dispatch(getAllCategoryApi()).then((data) => {
       const cateData = data?.payload?.category;
@@ -59,17 +77,17 @@ const AddProduct = ({
     });
   }, [dispatch]);
 
-  // get all SubCategory
+  // Get all subCategory
   useEffect(() => {
     dispatch(getAllSubCategoryApi()).then((data) => {
       const subCateData = data?.payload?.subCategory;
-
       if (data?.payload?.status) {
         setsubCategoryData(subCateData);
       }
     });
   }, [dispatch]);
 
+  // Handle image upload
   const handleAddImageProduct = (e) => {
     const files = Array.from(e.target.files);
 
@@ -87,15 +105,22 @@ const AddProduct = ({
     }
 
     setproductError("");
-
     setProductImages((prev) => [...prev, ...validFiles]);
     setImagePreviews((prev) => [
       ...prev,
       ...validFiles.map((file) => URL.createObjectURL(file)),
     ]);
   };
+
+  // Handle submit
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!productName || !productPrice || !productUnit) {
+      setproductError("Name, Price, and Unit are required.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", productName);
@@ -107,43 +132,41 @@ const AddProduct = ({
     productImages.forEach((file) => {
       formData.append("images", file);
     });
+
     if (isEditProduct) {
       dispatch(updateProductApi({ formData, productId })).then((data) => {
         if (data?.payload?.status) {
           fetchAllProduct();
           handleAddProductForm();
           setisEditProduct(false);
+          resetForm();
         }
       });
     } else {
-      try {
-        dispatch(
-          addproductApi({
-            formData,
-            categoryId: selectedCategoryId,
-            subCategoryId: selectedSubCategoryId,
-          })
-        ).then((data) => {
-          if (data?.payload?.status) {
-            setproductDescription("");
-            setproductDescription("");
-            setproductName("");
-            setproductUnit("");
-            setproductPrice("");
-            setproductError("");
-            setImagePreviews([]);
-            fetchAllProduct();
-          }
-        });
-      } catch (err) {
-        console.error("❌ Error adding product:", err);
-      }
+      dispatch(
+        addproductApi({
+          formData,
+          categoryId: selectedCategoryId,
+          subCategoryId: selectedSubCategoryId,
+        })
+      ).then((data) => {
+        if (data?.payload?.status) {
+         
+          
+          fetchAllProduct();
+          handleAddProductForm();
+
+          resetForm();
+        }
+      });
     }
   };
 
   return (
     <div className="px-4 sm:px-8 lg:px-16 py-10 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-6">Add New Product</h1>
+      <h1 className="text-2xl font-semibold mb-6">
+        {isEditProduct ? "Update Product" : "Add New Product"}
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Product Name */}
@@ -159,7 +182,6 @@ const AddProduct = ({
         </div>
 
         {/* Upload Product Image */}
-
         <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-md">
           <p className="font-semibold mb-2">Upload Product Images</p>
           <p className="text-sm text-gray-500 mb-4">
@@ -181,7 +203,7 @@ const AddProduct = ({
             onChange={handleAddImageProduct}
           />
 
-          {/* Static Multiple Image Previews */}
+          {/* Image Previews */}
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {imagePreviews.map((url, index) => (
               <img
@@ -194,10 +216,10 @@ const AddProduct = ({
           </div>
         </div>
         {productError && (
-          <p className="text-center text-red-500 text-xl">{productError}</p>
+          <p className="text-center text-red-500 text-sm">{productError}</p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Category */}
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
@@ -206,6 +228,7 @@ const AddProduct = ({
               onChange={(e) => setSelectedCategoryId(e.target.value)}
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none"
             >
+              <option value="">Select Category</option>
               {categoryData.map((cate) => (
                 <option key={cate._id} value={cate._id}>
                   {cate.name}
@@ -224,6 +247,7 @@ const AddProduct = ({
               onChange={(e) => setSelectedSubCategoryId(e.target.value)}
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none"
             >
+              <option value="">Select Subcategory</option>
               {subCategoryData.map((subCate) => (
                 <option value={subCate._id} key={subCate._id}>
                   {subCate.name}
@@ -285,7 +309,7 @@ const AddProduct = ({
 
         {/* Submit Button */}
         {isLoading ? (
-          <div className="flex justify-center  ">
+          <div className="flex justify-center">
             <RippleRingLoader size={43} color="#8B5CF6" speed={2} />
           </div>
         ) : (
@@ -294,7 +318,7 @@ const AddProduct = ({
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md"
             >
-              Add Product
+              {isEditProduct ? "Update Product" : "Add Product"}
             </button>
           </div>
         )}
