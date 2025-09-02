@@ -41,15 +41,7 @@ function Product() {
 
         <div className="flex items-center gap-4">
           <div className="flex bg-[#ebf2e9] items-center rounded-lg px-2 h-10">
-            {/* <svg
-              className="text-[#639155]"
-              width="24"
-              height="24"
-              fill="currentColor"
-              viewBox="0 0 256 256"
-            >
-              <path d="M229.66,218.34l-50.07-50.06a88.11..." />
-            </svg> */}
+        
             <input
               type="text"
               placeholder="Search"

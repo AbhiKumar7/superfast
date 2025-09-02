@@ -46,7 +46,6 @@ function DisplayProduct({ productData, fetchAllProduct,handleAddProductForm ,set
                         className="w-full aspect-square object-cover rounded-md"
                       />
 
-                      {/* Dots centered at bottom */}
                       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                         {product.image.map((_, idx) => (
                           <span

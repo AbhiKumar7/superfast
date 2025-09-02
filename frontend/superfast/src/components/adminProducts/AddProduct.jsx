@@ -112,11 +112,11 @@ const AddProduct = ({
     ]);
   };
 
-  // Handle submit
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
+  
     if (!productName || !productPrice || !productUnit) {
       setproductError("Name, Price, and Unit are required.");
       return;
